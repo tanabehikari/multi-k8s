@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t hikaritanabe/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run hikaritanabe/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t hikaritanabe/multi-client ./client
+  - docker build -t hikaritanabe/multi-nginx ./nginx
+  - docker build -t hikaritanabe/multi-server ./server
+  - docker build -t hikaritanabe/multi-worker ./worker
+  # Login to the docker CLI
+  - echo "$DOCKER_PASWORD"| docker login -u "$DOCKER_ID" --password-stdin
+  # Thake those images and push them to docker hub
+  - docker push hikaritanabe/multi-client
+  - docker push hikaritanabe/multi-nginx
+  - docker push hikaritanabe/multi-server
+  - docker push hikaritanabe/multi-worker
