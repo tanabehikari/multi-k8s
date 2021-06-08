@@ -1,0 +1,4 @@
+username: postgres
+pass: postgres_password
+dataname: fibvalues
+
